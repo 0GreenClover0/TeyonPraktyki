@@ -1,5 +1,10 @@
-// Fill out your copyright notice in the Description page of Project Settings.
-
+// Copyright 2025 Teyon. All Rights Reserved.
 
 #include "PraktykiGameModeBase.h"
 
+#include "PraktykiPlayerController.h"
+
+APraktykiGameModeBase::APraktykiGameModeBase()
+{
+	PlayerControllerClass = APraktykiPlayerController::StaticClass();
+}

@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright 2025 Teyon. All Rights Reserved.
 
 #pragma once
 
@@ -7,11 +7,13 @@
 #include "PraktykiGameModeBase.generated.h"
 
 /**
- * 
+ * Base class for other game modes.
  */
-UCLASS()
-class PRAKTYKI_API APraktykiGameModeBase : public AGameModeBase
+UCLASS(MinimalAPI)
+class APraktykiGameModeBase : public AGameModeBase
 {
 	GENERATED_BODY()
-	
+
+public:
+	APraktykiGameModeBase();
 };
