@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "Blueprint/UserWidget.h"
+#include "GameModeType.h"
 #include "PraktykiVehicleUI.generated.h"
 
 /**
@@ -17,12 +18,15 @@ class PRAKTYKI_API UPraktykiVehicleUI : public UUserWidget
 public:
 	// Updates corresponding attributes on display
 
+	void UpdateMaxGameTime(float MaxGameTime);
 	void UpdateSpeed(float NewSpeed);
 	void UpdateCurrentLapTime(float CurrentLapTime);
 	void UpdateLastLapTime(float LastLapTime);
 	void UpdateOverallTime(float CurrentLapTime);
-	void UpdateCurrentLap(int32 CurrentLap);
 	void UpdateBestLapTime(float BestLapTime);
+	void UpdateCurrentLap(int32 CurrentLap);
+	void UpdateRequiredLaps(int32 LapsCount);
+	void UpdateMode(EGameModeType GameModeType);
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -30,6 +34,9 @@ protected:
 
 	UFUNCTION(BlueprintCallable)
 	FString FormatSpeed(float Speed);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = Vehicle)
+	void OnMaxGameTimeUpdate(float MaxGameTime);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Vehicle)
 	void OnSpeedUpdate(float NewSpeed);
@@ -44,8 +51,14 @@ protected:
 	void OnCurrentLapUpdate(int32 CurrentLap);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Vehicle)
+	void OnRequiredLapsUpdate(int32 LapsCount);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = Vehicle)
 	void OnBestLapTimeUpdate(float BestLapTime);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Vehicle)
 	void OnLastLapTimeUpdate(float LastLapTime);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = Vehicle)
+	void OnGameModeTypeUpdate(EGameModeType GameModeType);
 };

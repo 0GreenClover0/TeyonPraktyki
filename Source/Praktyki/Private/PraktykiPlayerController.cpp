@@ -6,14 +6,17 @@
 #include "Blueprint/UserWidget.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "PraktykiGameInstance.h"
 #include "PraktykiVehiclePawn.h"
 #include "PraktykiVehicleUI.h"
+#include "Kismet/GameplayStatics.h"
+#include "Praktyki/PraktykiGameModeBase.h"
 
 void APraktykiPlayerController::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	if (IsValid(VehiclePawn) && IsValid(VehicleUI))
+	if (IsValid(VehicleUI) && IsValid(VehiclePawn))
 	{
 		VehicleUI->UpdateSpeed(VehiclePawn->GetChaosVehicleMovement()->GetForwardSpeed());
 
@@ -21,11 +24,18 @@ void APraktykiPlayerController::Tick(float DeltaTime)
 
 		VehicleUI->UpdateOverallTime(VehiclePawn->GetOverallLapsTime());
 	}
+
+	if (IsValid(VehicleUI) && IsValid(GameMode))
+	{
+		VehicleUI->UpdateMaxGameTime(GameMode->GetTime());
+	}
 }
 
 void APraktykiPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
+
+	GameMode = Cast<APraktykiGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
 	// Spawn the UI widget and add it to the viewport.
 	VehicleUI = CreateWidget<UPraktykiVehicleUI>(this, VehicleUIClass);
@@ -33,6 +43,16 @@ void APraktykiPlayerController::BeginPlay()
 	check(VehicleUI);
 
 	VehicleUI->AddToViewport();
+
+	UPraktykiGameInstance* GameInstance = GetGameInstance<UPraktykiGameInstance>();
+
+	check(GameInstance);
+
+	VehicleUI->UpdateMaxGameTime(GameInstance->GetMaxGameTime());
+
+	VehicleUI->UpdateRequiredLaps(GameInstance->GetLapsCount());
+
+	VehicleUI->UpdateMode(GameInstance->GetGameModeType());
 }
 
 void APraktykiPlayerController::SetupInputComponent()

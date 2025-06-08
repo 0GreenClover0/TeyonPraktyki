@@ -6,6 +6,8 @@
 #include "GameFramework/GameModeBase.h"
 #include "PraktykiGameModeBase.generated.h"
 
+class UPraktykiGameInstance;
+
 /**
  * Base class for other game modes.
  */
@@ -16,4 +18,17 @@ class APraktykiGameModeBase : public AGameModeBase
 
 public:
 	APraktykiGameModeBase();
+
+	virtual void Tick(float DeltaTime) override;
+
+	float GetTime() const { return GameTime; }
+
+protected:
+	virtual void BeginPlay() override;
+
+private:
+	UPROPERTY()
+	UPraktykiGameInstance* GameInstance = nullptr;
+
+	float GameTime = 0.0f;
 };

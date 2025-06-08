@@ -6,6 +6,7 @@
 #include "GameFramework/PlayerController.h"
 #include "PraktykiPlayerController.generated.h"
 
+class APraktykiGameModeBase;
 class APraktykiVehiclePawn;
 class UInputMappingContext;
 class UPraktykiVehicleUI;
@@ -27,6 +28,10 @@ protected:
 
 	virtual void OnPossess(APawn* InPawn) override;
 
+private:
+	UFUNCTION()
+	void OnLapFinished(int32 CurrentLap);
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* InputMappingContext;
@@ -38,7 +43,5 @@ protected:
 
 	TObjectPtr<UPraktykiVehicleUI> VehicleUI;
 
-private:
-	UFUNCTION()
-	void OnLapFinished(int32 CurrentLap);
+	TObjectPtr<APraktykiGameModeBase> GameMode;
 };

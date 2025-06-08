@@ -2,6 +2,11 @@
 
 #include "PraktykiVehicleUI.h"
 
+void UPraktykiVehicleUI::UpdateMaxGameTime(float MaxGameTime)
+{
+	OnMaxGameTimeUpdate(MaxGameTime);
+}
+
 void UPraktykiVehicleUI::UpdateSpeed(float NewSpeed)
 {
 	constexpr float KilometersPerHourConverionRate = 0.036f;
@@ -30,9 +35,19 @@ void UPraktykiVehicleUI::UpdateCurrentLap(int32 CurrentLap)
 	OnCurrentLapUpdate(CurrentLap);
 }
 
+void UPraktykiVehicleUI::UpdateRequiredLaps(int32 LapsCount)
+{
+	OnRequiredLapsUpdate(LapsCount);
+}
+
 void UPraktykiVehicleUI::UpdateBestLapTime(float BestLapTime)
 {
 	OnBestLapTimeUpdate(BestLapTime);
+}
+
+void UPraktykiVehicleUI::UpdateMode(EGameModeType GameModeType)
+{
+	OnGameModeTypeUpdate(GameModeType);
 }
 
 FString UPraktykiVehicleUI::FormatTime(float TimeInSeconds)
