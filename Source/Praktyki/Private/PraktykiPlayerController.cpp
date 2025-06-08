@@ -16,6 +16,10 @@ void APraktykiPlayerController::Tick(float DeltaTime)
 	if (IsValid(VehiclePawn) && IsValid(VehicleUI))
 	{
 		VehicleUI->UpdateSpeed(VehiclePawn->GetChaosVehicleMovement()->GetForwardSpeed());
+
+		VehicleUI->UpdateCurrentLapTime(VehiclePawn->GetCurrentLapTime());
+
+		VehicleUI->UpdateOverallTime(VehiclePawn->GetOverallLapsTime());
 	}
 }
 
@@ -51,4 +55,20 @@ void APraktykiPlayerController::OnPossess(APawn* InPawn)
 	Super::OnPossess(InPawn);
 
 	VehiclePawn = CastChecked<APraktykiVehiclePawn>(InPawn);
+
+	VehiclePawn->FOnLapFinishedDelegate.AddDynamic(this, &APraktykiPlayerController::OnLapFinished);
+}
+
+void APraktykiPlayerController::OnLapFinished(int32 CurrentLap)
+{
+	if (IsValid(VehicleUI))
+	{
+		VehicleUI->UpdateCurrentLap(CurrentLap);
+
+		check(VehiclePawn);
+
+		VehicleUI->UpdateBestLapTime(VehiclePawn->GetBestLapTime());
+
+		VehicleUI->UpdateLastLapTime(VehiclePawn->GetLastLapTime());
+	}
 }

@@ -89,15 +89,33 @@ void APraktykiVehiclePawn::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
-	// Angular damping if the vehicle is in midair
-	bool bMovingOnGround = ChaosVehicleMovement->IsMovingOnGround();
-	GetMesh()->SetAngularDamping(bMovingOnGround ? 0.0f : 3.0f);
+	AdjustAngularDamping();
 
-	// Realign the camera yaw to face front
-	float CameraYaw = BackSpringArm->GetRelativeRotation().Yaw;
-	CameraYaw = FMath::FInterpTo(CameraYaw, 0.0f, DeltaTime, 1.0f);
+	RealignCamera(DeltaTime);
 
-	BackSpringArm->SetRelativeRotation(FRotator(0.0f, CameraYaw, 0.0f));
+	TickCounters(DeltaTime);
+}
+
+void APraktykiVehiclePawn::FinishLap()
+{
+	if (FinishLapCooldownCounter > 0.0f)
+	{
+		return;
+	}
+
+	LapsCounter += 1;
+
+	if (BestLapTime > CurrentLapTime)
+	{
+		BestLapTime = CurrentLapTime;
+	}
+
+	LastLapTime = CurrentLapTime;
+	CurrentLapTime = 0.0f;
+
+	FinishLapCooldownCounter = FinishLapCooldown;
+
+	FOnLapFinishedDelegate.Broadcast(LapsCounter);
 }
 
 void APraktykiVehiclePawn::Steering(const FInputActionValue& Value)
@@ -123,28 +141,21 @@ void APraktykiVehiclePawn::Brake(const FInputActionValue& Value)
 
 void APraktykiVehiclePawn::StartBrake(const FInputActionValue& Value)
 {
-	BrakeLights(true);
 }
 
 void APraktykiVehiclePawn::StopBrake(const FInputActionValue& Value)
 {
-	BrakeLights(false);
-
 	ChaosVehicleMovement->SetBrakeInput(0.0f);
 }
 
 void APraktykiVehiclePawn::StartHandbrake(const FInputActionValue& Value)
 {
 	ChaosVehicleMovement->SetHandbrakeInput(true);
-
-	BrakeLights(true);
 }
 
 void APraktykiVehiclePawn::StopHandbrake(const FInputActionValue& Value)
 {
 	ChaosVehicleMovement->SetHandbrakeInput(false);
-
-	BrakeLights(false);
 }
 
 void APraktykiVehiclePawn::LookAround(const FInputActionValue& Value)
@@ -179,4 +190,33 @@ void APraktykiVehiclePawn::ResetVehicle(const FInputActionValue& Value)
 	GetMesh()->SetPhysicsLinearVelocity(FVector::ZeroVector);
 
 	UE_LOG(LogTemp, Warning, TEXT("Reset Vehicle"));
+}
+
+void APraktykiVehiclePawn::AdjustAngularDamping() const
+{
+	// Angular damping if the vehicle is in midair
+	bool bMovingOnGround = ChaosVehicleMovement->IsMovingOnGround();
+	GetMesh()->SetAngularDamping(bMovingOnGround ? 0.0f : 3.0f);
+}
+
+void APraktykiVehiclePawn::RealignCamera(float DeltaTime) const
+{
+	// Realign the camera yaw to face front
+	float CameraYaw = BackSpringArm->GetRelativeRotation().Yaw;
+	CameraYaw = FMath::FInterpTo(CameraYaw, 0.0f, DeltaTime, 1.0f);
+
+	BackSpringArm->SetRelativeRotation(FRotator(0.0f, CameraYaw, 0.0f));
+}
+
+void APraktykiVehiclePawn::TickCounters(float DeltaTime)
+{
+	CurrentLapTime += DeltaTime;
+	OverallLapsTime += DeltaTime;
+
+	FinishLapCooldownCounter -= DeltaTime;
+
+	if (FinishLapCooldownCounter < 0.0f)
+	{
+		FinishLapCooldownCounter = 0.0f;
+	}
 }

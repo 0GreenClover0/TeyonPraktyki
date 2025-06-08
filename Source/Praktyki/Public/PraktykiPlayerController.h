@@ -37,4 +37,8 @@ protected:
 	TSubclassOf<UPraktykiVehicleUI> VehicleUIClass;
 
 	TObjectPtr<UPraktykiVehicleUI> VehicleUI;
+
+private:
+	UFUNCTION()
+	void OnLapFinished(int32 CurrentLap);
 };
