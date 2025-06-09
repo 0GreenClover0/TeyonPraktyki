@@ -127,6 +127,7 @@ void APraktykiPlayerController::OnRaceFinished()
 
 	VehiclePawn->SetActorTickEnabled(false);
 	VehiclePawn->DetachFromControllerPendingDestroy();
+	VehiclePawn->Destroy();
 
 	// Spawn the End Race Widget and add it to the viewport.
 	EndRaceWidget = CreateWidget<UPraktykiEndRaceWidget>(this, EndRaceWidgetClass);
