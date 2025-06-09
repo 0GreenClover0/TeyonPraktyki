@@ -6,6 +6,9 @@
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "PraktykiComeBackWidget.h"
+#include "PraktykiPlayerController.h"
+#include "Blueprint/UserWidget.h"
 
 APraktykiVehiclePawn::APraktykiVehiclePawn()
 {
@@ -94,6 +97,11 @@ void APraktykiVehiclePawn::Tick(float DeltaTime)
 	RealignCamera(DeltaTime);
 
 	TickCounters(DeltaTime);
+
+	if (ComeBackWidget && !bIsOnTrack)
+	{
+		ComeBackWidget->UpdateTimeLeft(OffTrackMaxTime - OffTrackCounter);
+	}
 }
 
 void APraktykiVehiclePawn::FinishLap()
@@ -116,6 +124,26 @@ void APraktykiVehiclePawn::FinishLap()
 	FinishLapCooldownCounter = FinishLapCooldown;
 
 	FOnLapFinishedDelegate.Broadcast(LapsCounter);
+}
+
+void APraktykiVehiclePawn::BeginPlay()
+{
+	Super::BeginPlay();
+
+	PlayerController = Cast<APraktykiPlayerController>(GetController());
+
+	check(PlayerController);
+
+	GetWorld()->GetTimerManager().SetTimer(CheckGroundTimer, this, &APraktykiVehiclePawn::CheckGround, 0.1f, true);
+
+	// Spawn the Come Back Widget and add it to the viewport. Hide it.
+	ComeBackWidget = CreateWidget<UPraktykiComeBackWidget>(PlayerController, ComeBackWidgetClass);
+
+	check(ComeBackWidget);
+
+	ComeBackWidget->SetVisibility(ESlateVisibility::Hidden);
+
+	ComeBackWidget->AddToViewport();
 }
 
 void APraktykiVehiclePawn::Steering(const FInputActionValue& Value)
@@ -218,5 +246,48 @@ void APraktykiVehiclePawn::TickCounters(float DeltaTime)
 	if (FinishLapCooldownCounter < 0.0f)
 	{
 		FinishLapCooldownCounter = 0.0f;
+	}
+
+	if (!bIsOnTrack)
+	{
+		OffTrackCounter += DeltaTime;
+	}
+	else
+	{
+		OffTrackCounter = 0.0f;
+	}
+}
+
+void APraktykiVehiclePawn::CheckGround()
+{
+	if (bHasAbortedRace)
+	{
+		return;
+	}
+
+	static FHitResult HitResult;
+	static FCollisionQueryParams Params;
+
+	bool bHasHit = GetWorld()->LineTraceSingleByChannel(HitResult, GetActorLocation() + FVector(0.0f, 0.0f, 50),
+		GetActorLocation() + FVector(0.0f, 0.0f, -150.0f), ECC_GameTraceChannel1, Params
+	);
+
+	if (bHasHit)
+	{
+		bIsOnTrack = true;
+		OffTrackCounter = 0.0f;
+		ComeBackWidget->SetVisibility(ESlateVisibility::Hidden);
+		return;
+	}
+
+	bIsOnTrack = false;
+	ComeBackWidget->SetVisibility(ESlateVisibility::Visible);
+
+	// Spend too much time off track. Abort the race.
+	if (OffTrackCounter > OffTrackMaxTime)
+	{
+		ComeBackWidget->SetVisibility(ESlateVisibility::Hidden);
+		PlayerController->AbortRace();
+		bHasAbortedRace = true;
 	}
 }

@@ -6,10 +6,12 @@
 #include "WheeledVehiclePawn.h"
 #include "PraktykiVehiclePawn.generated.h"
 
+class APraktykiPlayerController;
 struct FInputActionValue;
 class UCameraComponent;
 class UChaosWheeledVehicleMovementComponent;
 class UInputAction;
+class UPraktykiComeBackWidget;
 class USpringArmComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLapFinished, int32, NewLap);
@@ -48,6 +50,8 @@ public:
 	float GetBestLapTime() const { return BestLapTime; }
 
 protected:
+	virtual void BeginPlay() override;
+
 	void Steering(const FInputActionValue& Value);
 
 	void Throttle(const FInputActionValue& Value);
@@ -70,6 +74,7 @@ private:
 	void AdjustAngularDamping() const;
 	void RealignCamera(float DeltaTime) const;
 	void TickCounters(float DeltaTime);
+	void CheckGround();
 
 public:
 	UPROPERTY(BlueprintAssignable)
@@ -97,6 +102,15 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadonly, Category = Input)
 	UInputAction* ResetVehicleAction;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI)
+	TSubclassOf<UPraktykiComeBackWidget> ComeBackWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UPraktykiComeBackWidget> ComeBackWidget;
+
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	float OffTrackMaxTime = 4.0f;
+
 	bool bFrontCameraActive = false;
 
 private:
@@ -116,7 +130,13 @@ private:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	UCameraComponent* BackCamera;
 
+	UPROPERTY()
 	TObjectPtr<UChaosWheeledVehicleMovementComponent> ChaosVehicleMovement;
+
+	UPROPERTY()
+	TObjectPtr<APraktykiPlayerController> PlayerController;
+
+	FTimerHandle CheckGroundTimer;
 
 	int32 LapsCounter = 0;
 	float CurrentLapTime = 0.0f;
@@ -126,4 +146,8 @@ private:
 
 	static constexpr float FinishLapCooldown = 7.0f;
 	float FinishLapCooldownCounter = 0.0f;
+
+	float OffTrackCounter = 0.0f;
+	bool bIsOnTrack = true;
+	bool bHasAbortedRace = false;
 };

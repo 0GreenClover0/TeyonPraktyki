@@ -24,6 +24,8 @@ class PRAKTYKI_API APraktykiPlayerController : public APlayerController
 public:
 	virtual void Tick(float DeltaTime) override;
 
+	void AbortRace();
+
 protected:
 	virtual void BeginPlay() override;
 	virtual void SetupInputComponent() override;

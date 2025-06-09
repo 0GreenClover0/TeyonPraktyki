@@ -32,6 +32,11 @@ void APraktykiPlayerController::Tick(float DeltaTime)
 	}
 }
 
+void APraktykiPlayerController::AbortRace()
+{
+	OnRaceFinished();
+}
+
 void APraktykiPlayerController::BeginPlay()
 {
 	Super::BeginPlay();
