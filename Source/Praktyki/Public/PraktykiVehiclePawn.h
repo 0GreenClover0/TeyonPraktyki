@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PraktykiCarGhost.h"
 #include "WheeledVehiclePawn.h"
 #include "PraktykiVehiclePawn.generated.h"
 
@@ -75,12 +76,19 @@ private:
 	void RealignCamera(float DeltaTime) const;
 	void TickCounters(float DeltaTime);
 	void CheckGround();
+	void RegisterGhostFrame();
 
 public:
 	UPROPERTY(BlueprintAssignable)
 	FOnLapFinished FOnLapFinishedDelegate;
 
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadOnly)
+	TSubclassOf<APraktykiCarGhost> CarGhostClass;
+
+	UPROPERTY()
+	TObjectPtr<APraktykiCarGhost> CarGhost;
+
 	UPROPERTY(EditAnywhere, BlueprintReadonly, Category = Input)
 	UInputAction* SteeringAction;
 
@@ -136,6 +144,9 @@ private:
 	UPROPERTY()
 	TObjectPtr<APraktykiPlayerController> PlayerController;
 
+	TArray<FFrameInfo> FramesInfo;
+
+	FTimerHandle RegisterGhostFrameTimer;
 	FTimerHandle CheckGroundTimer;
 
 	int32 LapsCounter = 0;
@@ -150,4 +161,6 @@ private:
 	float OffTrackCounter = 0.0f;
 	bool bIsOnTrack = true;
 	bool bHasAbortedRace = false;
+
+	float GhostBeginningTime = 0.0f;
 };

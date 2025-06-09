@@ -6,6 +6,7 @@
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "EnhancedInputComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "PraktykiCarGhost.h"
 #include "PraktykiComeBackWidget.h"
 #include "PraktykiPlayerController.h"
 #include "Blueprint/UserWidget.h"
@@ -111,6 +112,20 @@ void APraktykiVehiclePawn::FinishLap()
 		return;
 	}
 
+	if (IsValid(CarGhost))
+	{
+		CarGhost->Destroy();
+	}
+
+	FVector Location = GetActorLocation();
+	CarGhost = Cast<APraktykiCarGhost>(GetWorld()->SpawnActor(CarGhostClass, &Location));
+
+	check(CarGhost);
+
+	CarGhost->StartGhost(FramesInfo);
+	FramesInfo.Reset();
+	GhostBeginningTime = GetGameTimeSinceCreation();
+
 	LapsCounter += 1;
 
 	if (BestLapTime > CurrentLapTime || BestLapTime <= 0.0f)
@@ -145,6 +160,7 @@ void APraktykiVehiclePawn::BeginPlay()
 	check(PlayerController);
 
 	GetWorld()->GetTimerManager().SetTimer(CheckGroundTimer, this, &APraktykiVehiclePawn::CheckGround, 0.1f, true);
+	GetWorld()->GetTimerManager().SetTimer(RegisterGhostFrameTimer, this, &APraktykiVehiclePawn::RegisterGhostFrame, 0.1f, true);
 
 	// Spawn the Come Back Widget and add it to the viewport. Hide it.
 	ComeBackWidget = CreateWidget<UPraktykiComeBackWidget>(PlayerController, ComeBackWidgetClass);
@@ -154,6 +170,11 @@ void APraktykiVehiclePawn::BeginPlay()
 	ComeBackWidget->SetVisibility(ESlateVisibility::Hidden);
 
 	ComeBackWidget->AddToViewport();
+
+	// Reserve some space for ghost frames.
+	FramesInfo.Reserve(500);
+
+	GhostBeginningTime = GetGameTimeSinceCreation();
 }
 
 void APraktykiVehiclePawn::Steering(const FInputActionValue& Value)
@@ -300,4 +321,9 @@ void APraktykiVehiclePawn::CheckGround()
 		PlayerController->AbortRace();
 		bHasAbortedRace = true;
 	}
+}
+
+void APraktykiVehiclePawn::RegisterGhostFrame()
+{
+	FramesInfo.Emplace(GetActorRotation(), GetActorLocation(), GetGameTimeSinceCreation() - GhostBeginningTime);
 }
