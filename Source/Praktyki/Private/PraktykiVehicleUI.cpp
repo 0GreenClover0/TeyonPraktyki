@@ -50,6 +50,11 @@ void UPraktykiVehicleUI::UpdateMode(EGameModeType GameModeType)
 	OnGameModeTypeUpdate(GameModeType);
 }
 
+void UPraktykiVehicleUI::UpdateLapsTable(int32 Lap, float LapTime, float DeltaBest)
+{
+	OnLapsTableUpdate(Lap, LapTime, DeltaBest);
+}
+
 FString UPraktykiVehicleUI::FormatTime(float TimeInSeconds)
 {
 	int32 Minutes = FMath::FloorToInt(TimeInSeconds / 60.0f);

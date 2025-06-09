@@ -118,12 +118,22 @@ void APraktykiVehiclePawn::FinishLap()
 		BestLapTime = CurrentLapTime;
 	}
 
+	float PreviousLapTime;
+	if (LapsCounter == 1)
+	{
+		PreviousLapTime = CurrentLapTime;
+	}
+	else
+	{
+		PreviousLapTime = LastLapTime;
+	}
+
 	LastLapTime = CurrentLapTime;
 	CurrentLapTime = 0.0f;
 
 	FinishLapCooldownCounter = FinishLapCooldown;
 
-	FOnLapFinishedDelegate.Broadcast(LapsCounter);
+	FOnLapFinishedDelegate.Broadcast(LapsCounter, PreviousLapTime);
 }
 
 void APraktykiVehiclePawn::BeginPlay()

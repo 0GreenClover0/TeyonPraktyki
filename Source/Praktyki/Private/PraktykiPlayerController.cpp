@@ -89,7 +89,7 @@ void APraktykiPlayerController::OnPossess(APawn* InPawn)
 	VehiclePawn->FOnLapFinishedDelegate.AddDynamic(this, &APraktykiPlayerController::OnLapFinished);
 }
 
-void APraktykiPlayerController::OnLapFinished(int32 CurrentLap)
+void APraktykiPlayerController::OnLapFinished(int32 CurrentLap, float PreviousLapTime)
 {
 	if (IsValid(VehicleUI))
 	{
@@ -100,6 +100,8 @@ void APraktykiPlayerController::OnLapFinished(int32 CurrentLap)
 		VehicleUI->UpdateBestLapTime(VehiclePawn->GetBestLapTime());
 
 		VehicleUI->UpdateLastLapTime(VehiclePawn->GetLastLapTime());
+
+		VehicleUI->UpdateLapsTable(CurrentLap - 1, VehiclePawn->GetLastLapTime(), PreviousLapTime - VehiclePawn->GetLastLapTime());
 	}
 
 	if (GameInstance->GetMaxLapsCount() == CurrentLap)

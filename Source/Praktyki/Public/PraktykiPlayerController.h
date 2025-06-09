@@ -34,7 +34,7 @@ protected:
 
 private:
 	UFUNCTION()
-	void OnLapFinished(int32 CurrentLap);
+	void OnLapFinished(int32 CurrentLap, float PreviousLapTime);
 
 	UFUNCTION()
 	void OnRaceFinished();

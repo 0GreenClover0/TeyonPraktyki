@@ -27,6 +27,7 @@ public:
 	void UpdateCurrentLap(int32 CurrentLap);
 	void UpdateRequiredLaps(int32 LapsCount);
 	void UpdateMode(EGameModeType GameModeType);
+	void UpdateLapsTable(int32 Lap, float LapTime, float DeltaBest);
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -58,6 +59,9 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Vehicle)
 	void OnLastLapTimeUpdate(float LastLapTime);
+
+	UFUNCTION(BlueprintImplementableEvent, Category = Vehicle)
+	void OnLapsTableUpdate(int32 Lap, float LapTime, float DeltaBest);
 
 	UFUNCTION(BlueprintImplementableEvent, Category = Vehicle)
 	void OnGameModeTypeUpdate(EGameModeType GameModeType);

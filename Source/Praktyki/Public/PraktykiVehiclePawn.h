@@ -14,7 +14,7 @@ class UInputAction;
 class UPraktykiComeBackWidget;
 class USpringArmComponent;
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnLapFinished, int32, NewLap);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnLapFinished, int32, NewLap, float, PreviousLapTime);
 
 /**
  *  Handles common functionality for all vehicle types, including input
