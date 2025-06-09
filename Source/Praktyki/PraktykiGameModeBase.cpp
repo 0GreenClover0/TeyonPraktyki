@@ -17,7 +17,18 @@ void APraktykiGameModeBase::Tick(float DeltaTime)
 {
 	Super::Tick(DeltaTime);
 
+	if (bGameEnded)
+	{
+		return;
+	}
+
 	GameTime -= DeltaTime;
+
+	if (GameTime < 0.0f)
+	{
+		bGameEnded = true;
+		FOnRaceFinishedDelegate.Broadcast();
+	}
 }
 
 void APraktykiGameModeBase::BeginPlay()

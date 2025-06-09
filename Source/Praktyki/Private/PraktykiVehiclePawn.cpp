@@ -105,7 +105,7 @@ void APraktykiVehiclePawn::FinishLap()
 
 	LapsCounter += 1;
 
-	if (BestLapTime > CurrentLapTime)
+	if (BestLapTime > CurrentLapTime || BestLapTime <= 0.0f)
 	{
 		BestLapTime = CurrentLapTime;
 	}

@@ -6,10 +6,11 @@
 #include "Blueprint/UserWidget.h"
 #include "ChaosWheeledVehicleMovementComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "Kismet/GameplayStatics.h"
+#include "PraktykiEndRaceWidget.h"
 #include "PraktykiGameInstance.h"
 #include "PraktykiVehiclePawn.h"
 #include "PraktykiVehicleUI.h"
-#include "Kismet/GameplayStatics.h"
 #include "Praktyki/PraktykiGameModeBase.h"
 
 void APraktykiPlayerController::Tick(float DeltaTime)
@@ -37,6 +38,12 @@ void APraktykiPlayerController::BeginPlay()
 
 	GameMode = Cast<APraktykiGameModeBase>(UGameplayStatics::GetGameMode(GetWorld()));
 
+	GameMode->FOnRaceFinishedDelegate.AddDynamic(this, &APraktykiPlayerController::OnRaceFinished);
+
+	GameInstance = GetGameInstance<UPraktykiGameInstance>();
+
+	check(GameInstance);
+
 	// Spawn the UI widget and add it to the viewport.
 	VehicleUI = CreateWidget<UPraktykiVehicleUI>(this, VehicleUIClass);
 
@@ -44,13 +51,11 @@ void APraktykiPlayerController::BeginPlay()
 
 	VehicleUI->AddToViewport();
 
-	UPraktykiGameInstance* GameInstance = GetGameInstance<UPraktykiGameInstance>();
-
 	check(GameInstance);
 
 	VehicleUI->UpdateMaxGameTime(GameInstance->GetMaxGameTime());
 
-	VehicleUI->UpdateRequiredLaps(GameInstance->GetLapsCount());
+	VehicleUI->UpdateRequiredLaps(GameInstance->GetMaxLapsCount());
 
 	VehicleUI->UpdateMode(GameInstance->GetGameModeType());
 }
@@ -91,4 +96,38 @@ void APraktykiPlayerController::OnLapFinished(int32 CurrentLap)
 
 		VehicleUI->UpdateLastLapTime(VehiclePawn->GetLastLapTime());
 	}
+
+	if (GameInstance->GetMaxLapsCount() == CurrentLap)
+	{
+		OnRaceFinished();
+	}
+}
+
+void APraktykiPlayerController::OnRaceFinished()
+{
+	if (VehicleUI)
+	{
+		VehicleUI->RemoveFromParent();
+	}
+
+	check(VehiclePawn);
+
+	VehiclePawn->SetActorTickEnabled(false);
+	VehiclePawn->DetachFromControllerPendingDestroy();
+
+	// Spawn the End Race Widget and add it to the viewport.
+	EndRaceWidget = CreateWidget<UPraktykiEndRaceWidget>(this, EndRaceWidgetClass);
+
+	check(EndRaceWidget);
+
+	EndRaceWidget->AddToViewport();
+
+	EndRaceWidget->UpdateBestLapTime(VehiclePawn->GetBestLapTime());
+	EndRaceWidget->UpdateOverallTime(VehiclePawn->GetOverallLapsTime());
+
+	EndRaceWidget->UpdateLapsCount(GameInstance->GetMaxLapsCount());
+
+	bShowMouseCursor = true;
+	bEnableClickEvents = true;
+	bEnableMouseOverEvents = true;
 }

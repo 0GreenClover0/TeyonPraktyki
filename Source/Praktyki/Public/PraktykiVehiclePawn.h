@@ -121,7 +121,7 @@ private:
 	int32 LapsCounter = 0;
 	float CurrentLapTime = 0.0f;
 	float LastLapTime = 0.0f;
-	float BestLapTime = std::numeric_limits<float>::max();
+	float BestLapTime = 0.0f;
 	float OverallLapsTime = 0.0f;
 
 	static constexpr float FinishLapCooldown = 7.0f;

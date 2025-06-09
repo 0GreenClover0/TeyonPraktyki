@@ -9,8 +9,6 @@ void UPraktykiMenuUI::NativeConstruct()
 	Super::NativeConstruct();
 
 	GameInstance = GetGameInstance<UPraktykiGameInstance>();
-
-	GameInstance->SetMaxGameTime(30);
 }
 
 void UPraktykiMenuUI::SetMaxTime(float Time)

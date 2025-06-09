@@ -29,7 +29,7 @@ protected:
 	UFUNCTION(BlueprintCallable)
 	void SetGameModeType(EGameModeType GameModeType);
 
-private:
-	UPROPERTY(VisibleAnywhere)
+protected:
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere)
 	UPraktykiGameInstance* GameInstance;
 };

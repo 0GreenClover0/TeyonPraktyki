@@ -9,6 +9,8 @@
 class APraktykiGameModeBase;
 class APraktykiVehiclePawn;
 class UInputMappingContext;
+class UPraktykiEndRaceWidget;
+class UPraktykiGameInstance;
 class UPraktykiVehicleUI;
 
 /**
@@ -32,16 +34,31 @@ private:
 	UFUNCTION()
 	void OnLapFinished(int32 CurrentLap);
 
+	UFUNCTION()
+	void OnRaceFinished();
+
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input)
 	UInputMappingContext* InputMappingContext;
 
+	UPROPERTY()
 	TObjectPtr<APraktykiVehiclePawn> VehiclePawn;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI)
 	TSubclassOf<UPraktykiVehicleUI> VehicleUIClass;
 
+	UPROPERTY()
 	TObjectPtr<UPraktykiVehicleUI> VehicleUI;
 
+	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = UI)
+	TSubclassOf<UPraktykiEndRaceWidget> EndRaceWidgetClass;
+
+	UPROPERTY()
+	TObjectPtr<UPraktykiEndRaceWidget> EndRaceWidget;
+
+	UPROPERTY()
 	TObjectPtr<APraktykiGameModeBase> GameMode;
+
+	UPROPERTY()
+	TObjectPtr<UPraktykiGameInstance> GameInstance;
 };

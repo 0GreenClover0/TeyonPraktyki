@@ -8,9 +8,8 @@
 
 class UPraktykiGameInstance;
 
-/**
- * Base class for other game modes.
- */
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnRaceFinished);
+
 UCLASS(MinimalAPI)
 class APraktykiGameModeBase : public AGameModeBase
 {
@@ -26,9 +25,14 @@ public:
 protected:
 	virtual void BeginPlay() override;
 
+public:
+	UPROPERTY(BlueprintAssignable)
+	FOnRaceFinished FOnRaceFinishedDelegate;
+
 private:
 	UPROPERTY()
 	UPraktykiGameInstance* GameInstance = nullptr;
 
 	float GameTime = 0.0f;
+	bool bGameEnded = false;
 };
