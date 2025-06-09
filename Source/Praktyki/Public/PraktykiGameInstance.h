@@ -36,7 +36,7 @@ public:
 	void ResetToDefault();
 
 private:
-	float MaxGameTime = 30.0f;
+	float MaxGameTime = 60.0f;
 	int32 LapsCount = 1;
 	int32 MaxLapsCount = 1;
 	EGameModeType GameModeType = EGameModeType::Training;
