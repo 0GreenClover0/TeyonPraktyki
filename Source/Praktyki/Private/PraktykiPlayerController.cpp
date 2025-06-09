@@ -63,6 +63,8 @@ void APraktykiPlayerController::BeginPlay()
 	VehicleUI->UpdateRequiredLaps(GameInstance->GetMaxLapsCount());
 
 	VehicleUI->UpdateMode(GameInstance->GetGameModeType());
+
+	LapsInfo.Reserve(GameInstance->GetMaxLapsCount());
 }
 
 void APraktykiPlayerController::SetupInputComponent()
@@ -91,6 +93,8 @@ void APraktykiPlayerController::OnPossess(APawn* InPawn)
 
 void APraktykiPlayerController::OnLapFinished(int32 CurrentLap, float PreviousLapTime)
 {
+	FPraktykiLapInfo LapInfo = FPraktykiLapInfo(CurrentLap - 1, VehiclePawn->GetLastLapTime(), PreviousLapTime - VehiclePawn->GetLastLapTime());
+
 	if (IsValid(VehicleUI))
 	{
 		VehicleUI->UpdateCurrentLap(CurrentLap);
@@ -101,8 +105,10 @@ void APraktykiPlayerController::OnLapFinished(int32 CurrentLap, float PreviousLa
 
 		VehicleUI->UpdateLastLapTime(VehiclePawn->GetLastLapTime());
 
-		VehicleUI->UpdateLapsTable(CurrentLap - 1, VehiclePawn->GetLastLapTime(), PreviousLapTime - VehiclePawn->GetLastLapTime());
+		VehicleUI->UpdateLapsTable(LapInfo.Lap, LapInfo.LapTime, LapInfo.TimeDelta);
 	}
+
+	LapsInfo.Add(LapInfo);
 
 	if (GameInstance->GetMaxLapsCount() == CurrentLap)
 	{
@@ -133,6 +139,8 @@ void APraktykiPlayerController::OnRaceFinished()
 	EndRaceWidget->UpdateOverallTime(VehiclePawn->GetOverallLapsTime());
 
 	EndRaceWidget->UpdateLapsCount(GameInstance->GetMaxLapsCount());
+
+	EndRaceWidget->UpdateLapInfoTable(LapsInfo);
 
 	bShowMouseCursor = true;
 	bEnableClickEvents = true;

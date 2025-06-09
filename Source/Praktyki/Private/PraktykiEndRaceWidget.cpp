@@ -17,6 +17,11 @@ void UPraktykiEndRaceWidget::UpdateLapsCount(int32 LapsCount)
 	OnLapsCountUpdate(LapsCount);
 }
 
+void UPraktykiEndRaceWidget::UpdateLapInfoTable(const TArray<FPraktykiLapInfo>& LapsInfo)
+{
+	OnLapInfoTableUpdate(LapsInfo);
+}
+
 FString UPraktykiEndRaceWidget::FormatTime(float TimeInSeconds)
 {
 	int32 Minutes = FMath::FloorToInt(TimeInSeconds / 60.0f);

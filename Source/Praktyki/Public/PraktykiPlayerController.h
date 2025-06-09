@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PraktykiLapInfo.h"
 #include "GameFramework/PlayerController.h"
 #include "PraktykiPlayerController.generated.h"
 
@@ -63,4 +64,8 @@ protected:
 
 	UPROPERTY()
 	TObjectPtr<UPraktykiGameInstance> GameInstance;
+
+private:
+	UPROPERTY()
+	TArray<FPraktykiLapInfo> LapsInfo;
 };

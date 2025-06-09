@@ -3,11 +3,12 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "PraktykiLapInfo.h"
 #include "Blueprint/UserWidget.h"
 #include "PraktykiEndRaceWidget.generated.h"
 
 /**
- *
+ * Widget that shows results after a race.
  */
 UCLASS()
 class PRAKTYKI_API UPraktykiEndRaceWidget : public UUserWidget
@@ -18,6 +19,7 @@ public:
 	void UpdateBestLapTime(float BestLapTime);
 	void UpdateOverallTime(float OverallTime);
 	void UpdateLapsCount(int32 LapsCount);
+	void UpdateLapInfoTable(const TArray<FPraktykiLapInfo>& LapsInfo);
 
 protected:
 	UFUNCTION(BlueprintCallable)
@@ -31,4 +33,7 @@ protected:
 
 	UFUNCTION(BlueprintImplementableEvent)
 	void OnLapsCountUpdate(int32 LapsCount);
+
+	UFUNCTION(BlueprintImplementableEvent)
+	void OnLapInfoTableUpdate(const TArray<FPraktykiLapInfo>& LapsInfo);
 };
