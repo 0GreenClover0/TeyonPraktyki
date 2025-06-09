@@ -109,7 +109,7 @@ protected:
 	TObjectPtr<UPraktykiComeBackWidget> ComeBackWidget;
 
 	UPROPERTY(EditAnywhere, BlueprintReadOnly)
-	float OffTrackMaxTime = 10.0f;
+	float OffTrackMaxTime = 5.0f;
 
 	bool bFrontCameraActive = false;
 
